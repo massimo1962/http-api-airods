@@ -1,0 +1,10 @@
+common:
+  custom:
+    # authentication: false
+    authentication: true
+
+upload:
+  summary: uploading a zip into restricted orders
+  responses:
+    '200':
+      description: upload has been completed without errors
