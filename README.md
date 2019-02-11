@@ -19,4 +19,4 @@ Select and Stage data on endpoint (retrieved by /list api)
 
 
 
-all infos here [https://github.com/massimo1962/http-api-airods/blob/master/README_eudat.md]
+all other infos here [https://github.com/EUDAT-B2STAGE/http-api]
