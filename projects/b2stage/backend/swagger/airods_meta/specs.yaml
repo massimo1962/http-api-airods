@@ -1,9 +1,0 @@
-
-file: airods
-class: AirodsMeta
-schema:
-  expose: true
-mapping:
-  airodsmeta: "/airods/meta"
-labels:
-  - airods

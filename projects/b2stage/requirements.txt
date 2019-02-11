@@ -1,2 +1,0 @@
-git+https://github.com/rapydo/utils.git@0.6.3
-git+https://github.com/rapydo/do.git@0.6.3

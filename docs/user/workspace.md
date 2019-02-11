@@ -1,4 +1,0 @@
-
-# Workspace domain
-
-`[TO DO]`

@@ -1,9 +1,0 @@
-
-restricted:
-  custom:
-    authentication: true
-  summary: enabling data centres to upload restricted data
-  responses:
-    '200':
-      description: provided B2ACCESS ids enabled
-
