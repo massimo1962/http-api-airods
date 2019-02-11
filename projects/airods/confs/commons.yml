@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+
+  backend:
+    environment:
+      MONGO_ENABLE: ${ACTIVATE_MONGODB}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_DATABASE: ${MONGO_DATABASE}
+      MONGO_PORT: ${MONGO_PORT} 
