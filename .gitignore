@@ -21,14 +21,7 @@ data/*/*.json
 ##  Submodules ##
 #################
 
-submodules/.backup
-submodules/build-templates
-submodules/utils
-submodules/http-api
-submodules/frontend
-submodules/prc
-submodules/rapydo-confs
-submodules/do
+/submodules
 
 ############################################
 ##  Dynamically created file and folders  ##
