@@ -7,7 +7,7 @@ project:
   extends-from: submodules/b2stage
 
 variables:
-  repos:
+  submodules:
     b2stage:
       branch: 1.0.6
       online_url: https://github.com/EUDAT-B2STAGE/http-api.git
