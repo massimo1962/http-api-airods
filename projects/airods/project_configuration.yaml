@@ -1,15 +1,15 @@
 project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing data in EUDAT domains
-  version: 1.0.5
-  rapydo: 0.6.4
+  version: 1.0.6
+  rapydo: 0.6.5
   extends: b2stage
   extends-from: submodules/b2stage
 
 variables:
   repos:
     b2stage:
-      branch: 1.0.5
+      branch: 1.0.6
       online_url: https://github.com/EUDAT-B2STAGE/http-api.git
       path: b2stage
       if: true
