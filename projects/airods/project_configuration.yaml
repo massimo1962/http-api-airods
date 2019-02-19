@@ -15,6 +15,7 @@ variables:
       if: true
 
   env:
+    ACTIVATE_ICAT: 0
 
 tags:
   #Swagger tags
