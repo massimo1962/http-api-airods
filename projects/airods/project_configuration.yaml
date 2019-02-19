@@ -1,6 +1,6 @@
 project:
-  title: AIRODS HTTP-API EPOS-ORFEUS
-  description: expose some endpoint api for Epos ecosystem
+  title: AIRODS HTTP-API EPOS-ORFEUS_CC-EOSC
+  description: expose some endpoint for Epos ecosystem
   version: 1.0.6
   rapydo: 0.6.5
   extends: b2stage
@@ -16,6 +16,14 @@ variables:
 
   env:
     ACTIVATE_ICAT: 0
+    ACTIVATE_MONGODB: 1
+    IRODS_ANONYMOUS: 0
+    IRODS_GUEST_USER: guest              # intended to work only with GSI
+    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
+    IRODS_DN:           # automatically computed within the docker network
+    IRODS_AUTHSCHEME: credentials
+    # IRODS_AUTHSCHEME: GSI
+    ALCHEMY_API_DB: SQL_API
 
 tags:
   #Swagger tags
