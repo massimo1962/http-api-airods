@@ -36,7 +36,7 @@ class Airods(EndpointResource):
 
     def get(self):
         # # --> important into mongo collections we must have:
-        # #     "_cls" : "b2stage.models.mongo.wf_do"
+        # #     "_cls" : "airods.models.mongo.wf_do"
         
         service = 'mongo'
         mongohd = self.get_service_instance(service_name=service)
@@ -59,8 +59,17 @@ class Airods(EndpointResource):
         myLon = float(myargs.get("minlon"))
         myLatX = float(myargs.get("maxlat"))
         myLonX = float(myargs.get("maxlon"))
-
-        myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
+        
+        
+        try:
+        
+            myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_max": { "$lte" : myEndDate },"dc_coverage_t_min": { "$gte" : myStartDate } })
+            
+            
+        except BaseException as e:
+                print(e, type(e))
+                return self.force_response(e)    
+        
         
         for document in myfirstvalue:
                 myLine['File_ID'] = document.fileId
@@ -88,7 +97,7 @@ class Airods(EndpointResource):
                 #    icom.read_in_streaming(document.irods_path)
                     
                 # test only
-                #return("download ok")
+                return("TEST download Ok")
             
             except BaseException as e:
                 print(e, type(e))
@@ -113,7 +122,7 @@ class AirodsMeta(EndpointResource):
     def get(self):
 
         # # --> important! into mongo collections we must have:
-        # #     "_cls" : "b2stage.models.mongo.wf_do"
+        # #     "_cls" : "airods.models.mongo.wf_do"
         
         service = 'mongo'
         mongohd = self.get_service_instance(service_name=service)
@@ -137,8 +146,8 @@ class AirodsMeta(EndpointResource):
         myLatX = float(myargs.get("maxlat"))
         myLonX = float(myargs.get("maxlon"))
 
-        #myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
-        myfirstvalue = mongohd.wf_do.objects.all()
+        myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_max": { "$lte" : myEndDate },"dc_coverage_t_min": { "$gte" : myStartDate } })
+        #myfirstvalue = mongohd.wf_do.objects.all()
         
 
         for document in myfirstvalue:
@@ -283,10 +292,12 @@ class AirodsStage( EndpointResource):
         myStartDate = dateutil.parser.parse(myargs.get("start"))
         myEndDate = dateutil.parser.parse(myargs.get("end"))
         
-        if myargs.get("nscl") :
+        print (myargs.get("nscl"))
+        
+        if myargs.get("nscl") == 'true' :
             
             if myargs.get("network"):
-                myNet = float(myargs.get("network"))
+                myNet = myargs.get("network")
             else:
                 return ['error on network declare']
             
@@ -304,7 +315,7 @@ class AirodsStage( EndpointResource):
             myLatX = float(myargs.get("maxlat"))
             myLonX = float(myargs.get("maxlon"))
 
-            myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
+            myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_max": { "$lte" : myEndDate },"dc_coverage_t_min": { "$gte" : myStartDate } })
         
         
         # IRODS 
@@ -353,7 +364,7 @@ class AirodsStage( EndpointResource):
         
         return ['total files staged: '+str(i), documentResult1]
     
-    # DO a COPY on Remote endpoint via irule
+    # MAKE a COPY on Remote endpoint via irule
     def icopy(self, icom, irods_path, dest_path):
         
         """ EUDAT RULE for Replica (exploited for copy) """
@@ -380,7 +391,7 @@ class AirodsStage( EndpointResource):
         return [rule_output]
     
     
-    # Exec a Rule
+    # Notes: Exec a Rule
     """
     def rule(self, icom, name, body, inputs, output=False):
         
@@ -483,7 +494,7 @@ class AirodsStage( EndpointResource):
 #
 # AIRODS - FREE
 # =============
-# (free up space on the remote endpoints)
+# (free up space on the remote endpoints)  --> probably will  not be used 
 #        
 class AirodsFree( EndpointResource):
     
