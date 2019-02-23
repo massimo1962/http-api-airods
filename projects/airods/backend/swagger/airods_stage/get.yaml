@@ -95,17 +95,17 @@ airodsstage:
         #maximum: 90
         #exclusiveMaximum: false
         #multipleOf: 10
-        default: '63.30'
+        default: '13.30'
         required: False
 
 
         # SELECTOR -BBOX / NSCL
       - name: nscl
-        description: Selector between boundingBox (false) and NSCL (true) query mode.  (in progress)
+        description: Select NSCL query mode (FDSN like) instead of boundingBox (default) 
         in: query
         # 
         type: boolean
-        default: 'False'
+        default: 'false'
         required: True
 
 
@@ -136,7 +136,7 @@ airodsstage:
         required: False
          
       - name: location
-        description: Select one location codes. (blank)
+        description: Select one location codes.
         in: query
         # 
         type: string

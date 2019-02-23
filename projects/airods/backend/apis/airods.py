@@ -273,7 +273,10 @@ class AirodsStage( EndpointResource):
         
         # MONGO
         myargs = self.get_input()
+        # debug
         print(myargs)
+        
+        # init
         documentResult1 = []
         myLine = {}
         
@@ -289,11 +292,13 @@ class AirodsStage( EndpointResource):
         
         mycollection = mongohd.wf_do
         
+        # get params
         myStartDate = dateutil.parser.parse(myargs.get("start"))
         myEndDate = dateutil.parser.parse(myargs.get("end"))
         
         print (myargs.get("nscl"))
         
+        # NSCL or BBOX
         if myargs.get("nscl") == 'true' :
             
             if myargs.get("network"):
@@ -304,9 +309,11 @@ class AirodsStage( EndpointResource):
             if myargs.get("station"): mySta = myargs.get("station")            
             if myargs.get("channel"): myCha = myargs.get("channel")             
             if myargs.get("location"): myLoc = myargs.get("location")
-            # "IV.ACER..HHE.D.2015.015",
-            myfirstvalue = mycollection.objects.raw({"fileId": myNet+"."+mySta+"."+myLoc+"."+myCha+".D"+"./i" ,"dc_coverage_t_min": { "$gte" : myStartDate }  , "dc_coverage_t_max": { "$lte" : myEndDate }})
-       
+            
+            # example of fileId "IV.ACER..HHE.D.2015.015"            
+            
+            myfirstvalue = mycollection.objects.raw({"fileId": {"$regex": ".*"+myNet+"."+mySta+"."+myLoc+"."+myCha+".*"},"dc_coverage_t_min": { "$gte" : myStartDate }  , "dc_coverage_t_max": { "$lte" : myEndDate } } )       
+
        
         else :
            
@@ -317,11 +324,19 @@ class AirodsStage( EndpointResource):
 
             myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_max": { "$lte" : myEndDate },"dc_coverage_t_min": { "$gte" : myStartDate } })
         
+        # debug
+        #for document in myfirstvalue:
+        #    print  (document.irods_path)
+            
+        # return ['total files staged che no: ']
         
+            
         # IRODS 
         icom = self.get_service_instance(service_name='irods')
         
         ephemeralDir=str(uuid.uuid4())
+        #
+        # @TODO: retrieve the stagePath from ENV 
         stagePath='/'+myargs.get("endpoint")+'/home/rods#INGV/areastage/'
         dest_path=stagePath+ephemeralDir
         
@@ -364,7 +379,7 @@ class AirodsStage( EndpointResource):
         
         return ['total files staged: '+str(i), documentResult1]
     
-    # MAKE a COPY on Remote endpoint via irule
+    # DO a COPY on Remote endpoint via irule
     def icopy(self, icom, irods_path, dest_path):
         
         """ EUDAT RULE for Replica (exploited for copy) """
@@ -391,7 +406,7 @@ class AirodsStage( EndpointResource):
         return [rule_output]
     
     
-    # Notes: Exec a Rule
+    # Exec a Rule
     """
     def rule(self, icom, name, body, inputs, output=False):
         
