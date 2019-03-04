@@ -8,6 +8,8 @@ services:
       MONGO_HOST: ${MONGO_HOST}
       MONGO_DATABASE: ${MONGO_DATABASE}
       MONGO_PORT: ${MONGO_PORT} 
+      
+      AIRODS_STAGE_PATH_1: ${AIRODS_STAGE_PATH_1}
 
     # required to avoid icat to automatically start
     networks:

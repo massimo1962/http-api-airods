@@ -24,6 +24,9 @@ variables:
     IRODS_AUTHSCHEME: credentials
     # IRODS_AUTHSCHEME: GSI
     ALCHEMY_API_DB: SQL_API
+    
+    # AIRODS
+    AIRODS_STAGE_PATH_1: /BINGV/home/rods#INGV/areastage/
 
 tags:
   #Swagger tags

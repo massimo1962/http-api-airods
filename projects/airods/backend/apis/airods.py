@@ -17,6 +17,9 @@ import subprocess
 from irods.query import SpecificQuery
 from irods.models import Collection, DataObject, User, UserGroup, UserAuth
 
+from restapi.services.detect import detector
+import os
+
 #################
 # INIT VARIABLES
 log = get_logger(__name__)
@@ -336,9 +339,26 @@ class AirodsStage( EndpointResource):
         
         ephemeralDir=str(uuid.uuid4())
         #
-        # @TODO: retrieve the stagePath from ENV 
-        stagePath='/'+myargs.get("endpoint")+'/home/rods#INGV/areastage/'
-        dest_path=stagePath+ephemeralDir
+        # @TODO:  multi endpoint managment        
+        # myvars = detector.load_group(label='airods')
+        
+        # retrieve the stagePath from ENV AIRODS_STAGE_PATH_1
+        stagePath = os.environ.get('AIRODS_STAGE_PATH_1')
+        print ("env-path: "+ stagePath )
+        
+        stagePath=stagePath if stagePath.startswith('/') else '/'+stagePath
+        
+        if stagePath.startswith('/'+myargs.get("endpoint")):
+            
+            # stagePath: '/home/rods#INGV/areastage/'
+           
+            dest_path=stagePath+ephemeralDir if stagePath.endswith('/') else stagePath+'/'+ephemeralDir
+            
+            
+        else:
+            # @TODO: to improve
+            print ('ERROR - on stagePath')
+            return ['ERROR - on stagePath or remote endpoint']
         
         ipath = icom.create_directory(dest_path)
         
