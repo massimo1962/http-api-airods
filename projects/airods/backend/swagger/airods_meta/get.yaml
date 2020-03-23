@@ -21,21 +21,21 @@ airodsmeta:
 
         #DATE-TIME
       - name: start
-        description: Limit to results starting on or after the specified start time
+        description: Limit to results starting on or after the specified start  in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)
         in: query
         # @TODO: iso date-time...
         type: string
         #format: ISO 8601
-        default: "13-01-2015T00:00:00Z"
+        default: "2015-01-13T00:00:00Z"
         required: True
 
       - name: end
-        description: Limit to results ending on or before the specified end time
+        description: Limit to results ending on or before the specified end time in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)
         in: query
         # @TODO: iso date-time...
         type: string
         #format: ISO 8601
-        default: "14-01-2015T00:00:00Z"
+        default: "2015-01-14T00:00:00Z"
         required: True
 
 
@@ -95,7 +95,7 @@ airodsmeta:
         #maximum: 90
         #exclusiveMaximum: false
         #multipleOf: 10
-        default: '13.30'
+        default: '63.30'
         required: True
 
 
@@ -143,4 +143,3 @@ airodsmeta:
 
         '503':
           description: Service temporarily unavailable, used in maintenance mode
-

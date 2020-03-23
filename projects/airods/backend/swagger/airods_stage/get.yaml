@@ -19,33 +19,25 @@ airodsstage:
 
         ## REQUIRED - PARAMS
 
-        #DATE-TIME
+         #DATE-TIME
       - name: start
-        description: Limit to results starting on or after the specified start time
+        description: Limit to results starting on or after the specified start  in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)
         in: query
         # @TODO: iso date-time...
         type: string
         #format: ISO 8601
-        default: "13-01-2015T00:00:00Z"
+        default: "2015-01-13T00:00:00Z"
         required: True
 
       - name: end
-        description: Limit to results ending on or before the specified end time
+        description: Limit to results ending on or before the specified end time in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)
         in: query
         # @TODO: iso date-time...
         type: string
         #format: ISO 8601
-        default: "14-01-2015T00:00:00Z"
+        default: "2015-01-14T00:00:00Z"
         required: True
 
-        # SELECTOR -BBOX / NSCL
-      - name: nscl
-        description: Selector between boundingBox and NSCL mode
-        in: query
-        # 
-        type: boolean
-        default: False
-        required: True
 
        # LAT-LON BOX
       - name: minlat
@@ -107,6 +99,16 @@ airodsstage:
         required: False
 
 
+        # SELECTOR -BBOX / NSCL
+      - name: nscl
+        description: Select NSCL query mode (FDSN like) instead of boundingBox (default) 
+        in: query
+        # 
+        type: boolean
+        default: 'false'
+        required: True
+
+
        # NSCL mode
          
       - name: network
@@ -141,6 +143,15 @@ airodsstage:
         default: ''
         required: False
 
+        #
+        # STAGE
+      - name: endpoint
+        description: Select target endpoint to stage data (see /list).
+        in: query
+        # 
+        type: string
+        default: 'TARGET'
+        required: True
 
 
         # SPECIFIC
@@ -181,4 +192,3 @@ airodsstage:
 
         '503':
           description: Service temporarily unavailable, used in maintenance mode
-

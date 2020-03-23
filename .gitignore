@@ -3,6 +3,7 @@
 ##  Your custom data  ##
 ########################
 .projectrc
+nbproject/*
 
 # data
 uploads
