@@ -4,6 +4,7 @@ services:
 
   icat:
     environment:
+      ACTIVATE: 0
 
   mongodb:
     environment:

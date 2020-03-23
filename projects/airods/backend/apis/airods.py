@@ -10,6 +10,7 @@ EPOS-EUDAT-EOSC
 from restapi.rest.definition import EndpointResource
 from restapi.services.detect import detector
 from restapi.utilities.logs import log
+# from restapi.protocols.bearer import authentication
 import dateutil.parser
 import uuid
 import subprocess
@@ -64,7 +65,7 @@ class Airods(EndpointResource):
             }
         }
     }
-
+    # authentication.required()
     def get(self):
         # # --> important into mongo collections we must have:
         # #     "_cls" : "airods.models.mongo.wf_do"
@@ -369,7 +370,6 @@ class AirodsStage( EndpointResource):
             }
         }
     }
-
     def get(self):
         service = 'mongo'
         mongohd = self.get_service_instance(service_name=service)
