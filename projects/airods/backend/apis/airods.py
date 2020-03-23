@@ -100,7 +100,7 @@ class Airods(EndpointResource):
             
         except BaseException as e:
             print(e, type(e))
-            return self.response(e)
+            return self.force_response(e)
         
         
         for document in myfirstvalue:
@@ -129,17 +129,17 @@ class Airods(EndpointResource):
                 #    icom.read_in_streaming(document.irods_path)
                     
                 # test only
-                return self.response("TEST download Ok")
+                return self.force_response("TEST download Ok")
             
             except BaseException as e:
                 print(e, type(e))
-                return self.response(e)
+                return self.force_response(e)
                 
             
         # Pid list :: OK
         else:
             
-            return self.response(["total files to download: "+str(len(documentResult1)) ,documentResult1])
+            return self.force_response(["total files to download: "+str(len(documentResult1)) ,documentResult1])
 
 
 #######################
@@ -237,7 +237,7 @@ class AirodsMeta(EndpointResource):
         if documentResult1 : print ("result - OK")
         #print (documentResult1)
     
-        return self.response([documentResult1])
+        return self.force_response([documentResult1])
 
         """
         # Write server logs, on different levels:
@@ -322,7 +322,7 @@ class AirodsList(EndpointResource):
         _ = query.remove()
             
             
-        return self.response([queryResponse])
+        return self.force_response([queryResponse])
     
 
     
@@ -412,7 +412,7 @@ class AirodsStage( EndpointResource):
             if myargs.get("network"):
                 myNet = myargs.get("network")
             else:
-                return self.response(['error on network declare'])
+                return self.force_response(['error on network declare'])
             
             if myargs.get("station"): mySta = myargs.get("station")            
             if myargs.get("channel"): myCha = myargs.get("channel")             
@@ -436,7 +436,7 @@ class AirodsStage( EndpointResource):
         #for document in myfirstvalue:
         #    print  (document.irods_path)
             
-        # return self.response(['total files staged che no: '])
+        # return self.force_response(['total files staged che no: '])
         
             
         # IRODS 
@@ -463,7 +463,7 @@ class AirodsStage( EndpointResource):
         else:
             # @TODO: to improve
             print ('ERROR - on stagePath')
-            return self.response(['ERROR - on stagePath or remote endpoint'])
+            return self.force_response(['ERROR - on stagePath or remote endpoint'])
         
         ipath = icom.create_directory(dest_path)
         
@@ -502,7 +502,7 @@ class AirodsStage( EndpointResource):
         myLine['remote_info'] = self.queryIcat(icom, myargs.get("endpoint"), dest_path)            
         documentResult1.insert(0, myLine) 
         
-        return self.response(['total files staged: '+str(i), documentResult1])
+        return self.force_response(['total files staged: '+str(i), documentResult1])
     
     # DO a COPY on Remote endpoint via irule
     def icopy(self, icom, irods_path, dest_path):
@@ -528,7 +528,7 @@ class AirodsStage( EndpointResource):
 
         rule_output = icom.rule( 'do_stage', body, inputs, output=True)
         
-        return self.response([rule_output])
+        return self.force_response([rule_output])
     
     
     # Exec a Rule
@@ -585,9 +585,9 @@ class AirodsStage( EndpointResource):
                     err_buf = re.sub(r'\s+', '', err_buf)
                     log.debug("Err buff: %s", err_buf)
 
-                return self.response(buf)
+                return self.force_response(buf)
 
-            return self.response(raw_out)
+            return self.force_response(raw_out)
         """
         
     # Exec a Query
@@ -626,7 +626,7 @@ class AirodsStage( EndpointResource):
 
         _ = query.remove()
         
-        return self.response(queryResponse)
+        return self.force_response(queryResponse)
         
 
 #################
@@ -676,4 +676,4 @@ class AirodsFree( EndpointResource):
         """
         
         
-        return self.response(['ciao'])
+        return self.force_response(['ciao'])
