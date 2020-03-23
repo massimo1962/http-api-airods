@@ -25,5 +25,5 @@ variables:
     # IRODS_AUTHSCHEME: GSI
     ALCHEMY_API_DB: SQL_API
 
-tags:
-  #Swagger tags
+# tags:
+#   Swagger tags
