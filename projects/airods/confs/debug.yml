@@ -1,7 +1,0 @@
-version: '3'
-
-services:
-
-  backend:
-    environment:
-      MONGO_ENABLE: ${ACTIVATE_MONGODB}
