@@ -9,7 +9,7 @@ EPOS-EUDAT-EOSC
 # IMPORTS
 from restapi.rest.definition import EndpointResource
 from restapi.services.detect import detector
-from utilities.logs import get_logger
+from restapi.utilities.logs import log
 import dateutil.parser
 import uuid
 import subprocess
@@ -22,7 +22,7 @@ import os
 
 #################
 # INIT VARIABLES
-log = get_logger(__name__)
+
 service_name = "sqlalchemy"
 # NOTE: if you need to operate based on service availability
 # SERVICE_AVAILABLE = detector.check_availability(service_name)

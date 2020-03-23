@@ -2,22 +2,9 @@ version: '3'
 
 services:
 
-  backend:
-    environment:
-      MONGO_ENABLE: ${ACTIVATE_MONGODB}
-      MONGO_HOST: ${MONGO_HOST}
-      MONGO_DATABASE: ${MONGO_DATABASE}
-      MONGO_PORT: ${MONGO_PORT} 
-      
-      AIRODS_STAGE_PATH_1: ${AIRODS_STAGE_PATH_1}
-
-    # required to avoid icat to automatically start
-    networks:
-      app_net:
-        aliases:
-          - ${FLASK_HOST}
-      db_net:
-
   icat:
+    environment:
+
+  mongodb:
     environment:
       ACTIVATE: 0 
