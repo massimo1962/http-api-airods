@@ -37,6 +37,34 @@ service_name = "sqlalchemy"
 #
 class Airods(EndpointResource):
 
+    labels = ['airods']
+    GET = {
+        '/airods/data': {
+            'summary': 'Get data from iRODS-B2SAFE via boundingBox-timeWindow  (Epos ecosystem)',
+            'parameters': [
+                {'name': 'debug', 'description': 'for debugging', 'in': 'query', 'type': 'string', 'default': 'no', 'required': False},
+                {'name': 'start', 'description': 'Limit to results starting on or after the specified start time in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)', 'in': 'query', 'type': 'string', 'default': '2015-01-03T00:00:00Z', 'required': True},
+                {'name': 'end', 'description': 'Limit to results ending on or before the specified end time in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)', 'in': 'query', 'type': 'string', 'default': '2015-01-24T00:00:00Z', 'required': True},
+                {'name': 'minlat', 'description': 'Limit to results starting on or after the specified Latitude', 'in': 'query', 'type': 'string', 'default': '35.30', 'required': True},
+                {'name': 'minlon', 'description': 'Limit to results starting on or after the specified start Longitude', 'in': 'query', 'type': 'string', 'default': '6.30', 'required': True},
+                {'name': 'maxlat', 'description': 'Limit to results ending on or before the specified end Latitude', 'in': 'query', 'type': 'string', 'default': '46.30', 'required': True},
+                {'name': 'maxlon', 'description': 'Limit to results ending on or before the specified end Longitude', 'in': 'query', 'type': 'string', 'default': '63.30', 'required': True},
+                {'name': 'download', 'description': 'Allow download data  or retrieve PID / URI of digital object', 'in': 'query', 'type': 'boolean', 'default': False, 'required': True},
+                {'name': 'limit', 'description': 'Make query limit (default=20)', 'in': 'query', 'type': 'string', 'default': '0', 'required': False},
+                {'name': 'offset', 'description': 'Make query offset (default=0)', 'in': 'query', 'type': 'string', 'default': '20', 'required': False},
+                {'name': 'output', 'description': 'Specifies the desired output format (if is set download param). Valid json values xml, json', 'in': 'query', 'type': 'string', 'default': 'json', 'required': False}
+            ],
+            'responses': {
+                '200': {'description': 'Successful request, results follow'},
+                '204': {'description': 'Request was properly formatted and submitted but no data matches the selection'},
+                '400': {'description': 'Bad request due to improper specification, unrecognised parameter, parameter value out of range, etc.'},
+                '413': {'description': 'Request would result in too much data being returned or the request itself is too large.'},
+                '500': {'description': 'Internal server error'},
+                '503': {'description': 'Service temporarily unavailable, used in maintenance mode'}
+            }
+        }
+    }
+
     def get(self):
         # # --> important into mongo collections we must have:
         # #     "_cls" : "airods.models.mongo.wf_do"
@@ -121,6 +149,33 @@ class Airods(EndpointResource):
 # (retrieve metadata of selected data)
 #
 class AirodsMeta(EndpointResource):
+
+    labels = ['airods']
+    GET = {
+        '/airods/meta': {
+            'summary': 'Get Metadata from iRODS-B2SAFE via boundingBox-timeWindow (Epos ecosystem)',
+            'parameters': [
+                {'name': 'debug', 'description': 'for debugging', 'in': 'query', 'type': 'string', 'default': 'no', 'required': False},
+                {'name': 'start', 'description': 'Limit to results starting on or after the specified start  in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)', 'in': 'query', 'type': 'string', 'default': '2015-01-13T00:00:00Z', 'required': True},
+                {'name': 'end', 'description': 'Limit to results ending on or before the specified end time in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)', 'in': 'query', 'type': 'string', 'default': '2015-01-14T00:00:00Z', 'required': True},
+                {'name': 'minlat', 'description': 'Limit to results starting on or after the specified Latitude', 'in': 'query', 'type': 'string', 'default': '35.30', 'required': True},
+                {'name': 'minlon', 'description': 'Limit to results starting on or after the specified start Longitude', 'in': 'query', 'type': 'string', 'default': '6.30', 'required': True},
+                {'name': 'maxlat', 'description': 'Limit to results ending on or before the specified end Latitude', 'in': 'query', 'type': 'string', 'default': '46.30', 'required': True},
+                {'name': 'maxlon', 'description': 'Limit to results ending on or before the specified end Longitude', 'in': 'query', 'type': 'string', 'default': '63.30', 'required': True},
+                {'name': 'limit', 'description': 'Make query limit (default=20)', 'in': 'query', 'type': 'string', 'default': '0', 'required': False},
+                {'name': 'offset', 'description': 'Make query offset (default=0)', 'in': 'query', 'type': 'string', 'default': '20', 'required': False},
+                {'name': 'output', 'description': 'Specifies the desired output format (if is set download param). Valid json values xml, json', 'in': 'query', 'type': 'string', 'default': 'json', 'required': False}
+            ],
+            'responses': {
+                '200': {'description': 'Successful request, results follow'},
+                '204': {'description': 'Request was properly formatted and submitted but no data matches the selection'},
+                '400': {'description': 'Bad request due to improper specification, unrecognised parameter, parameter value out of range, etc.'},
+                '413': {'description': 'Request would result in too much data being returned or the request itself is too large.'},
+                '500': {'description': 'Internal server error'},
+                '503': {'description': 'Service temporarily unavailable, used in maintenance mode'}
+            }
+        }
+    }
 
     def get(self):
 
@@ -223,6 +278,24 @@ class AirodsMeta(EndpointResource):
 #
 class AirodsList(EndpointResource):
     
+    labels = ['airods']
+    GET = {
+        '/airods/list': {
+            'summary': 'Get List of endpoint to stage data  (Epos ecosystem)',
+            'parameters': [
+                {'name': 'debug', 'description': 'for debugging', 'in': 'query', 'type': 'string', 'default': 'no', 'required': False}
+            ],
+            'responses': {
+                '200': {'description': 'Successful request, results follow'},
+                '204': {'description': 'Request was properly formatted and submitted but no data matches the selection'},
+                '400': {'description': 'Bad request due to improper specification, unrecognised parameter, parameter value out of range, etc.'},
+                '413': {'description': 'Request would result in too much data being returned or the request itself is too large.'},
+                '500': {'description': 'Internal server error'},
+                '503': {'description': 'Service temporarily unavailable, used in maintenance mode'}
+            }
+        }
+    }
+
     def get(self):
         
         icom = self.get_service_instance(service_name='irods') #, user='rods', password='sdor' 
@@ -265,6 +338,38 @@ class AirodsList(EndpointResource):
 # 
 class AirodsStage( EndpointResource):
     
+    labels = ['airods']
+    GET = {
+        '/airods/stage': {
+            'summary': 'Get data from iRODS-B2SAFE via boundingBox-timeWindow and stage data to endpoint (Epos ecosystem)',
+            'parameters': [
+                {'name': 'debug', 'description': 'for debugging', 'in': 'query', 'type': 'string', 'default': 'no', 'required': False},
+                {'name': 'start', 'description': 'Limit to results starting on or after the specified start  in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)', 'in': 'query', 'type': 'string', 'default': '2015-01-13T00:00:00Z', 'required': True},
+                {'name': 'end', 'description': 'Limit to results ending on or before the specified end time in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)', 'in': 'query', 'type': 'string', 'default': '2015-01-14T00:00:00Z', 'required': True},
+                {'name': 'minlat', 'description': 'Limit to results starting on or after the specified Latitude', 'in': 'query', 'type': 'string', 'default': '35.30', 'required': False},
+                {'name': 'minlon', 'description': 'Limit to results starting on or after the specified start Longitude', 'in': 'query', 'type': 'string', 'default': '6.30', 'required': False},
+                {'name': 'maxlat', 'description': 'Limit to results ending on or before the specified end Latitude', 'in': 'query', 'type': 'string', 'default': '46.30', 'required': False},
+                {'name': 'maxlon', 'description': 'Limit to results ending on or before the specified end Longitude', 'in': 'query', 'type': 'string', 'default': '13.30', 'required': False},
+                {'name': 'nscl', 'description': 'Select NSCL query mode (FDSN like) instead of boundingBox (default)', 'in': 'query', 'type': 'boolean', 'default': 'false', 'required': True},
+                {'name': 'network', 'description': 'Select one network codes.', 'in': 'query', 'type': 'string', 'default': 'IV', 'required': False},
+                {'name': 'station', 'description': 'Select one station codes.', 'in': 'query', 'type': 'string', 'default': 'ACER', 'required': False},
+                {'name': 'channel', 'description': 'Select one channel codes.', 'in': 'query', 'type': 'string', 'default': 'HHE', 'required': False},
+                {'name': 'location', 'description': 'Select one location codes.', 'in': 'query', 'type': 'string', 'default': '', 'required': False},
+                {'name': 'endpoint', 'description': 'Select target endpoint to stage data (see /list).', 'in': 'query', 'type': 'string', 'default': 'TARGET', 'required': True},
+                {'name': 'limit', 'description': 'Make query limit (default=20)', 'in': 'query', 'type': 'string', 'default': '0', 'required': False},
+                {'name': 'offset', 'description': 'Make query offset (default=0)', 'in': 'query', 'type': 'string', 'default': '20', 'required': False}
+            ],
+            'responses': {
+                '200': {'description': 'Successful request, results follow'},
+                '204': {'description': 'Request was properly formatted and submitted but no data matches the selection'},
+                '400': {'description': 'Bad request due to improper specification, unrecognised parameter, parameter value out of range, etc.'},
+                '413': {'description': 'Request would result in too much data being returned or the request itself is too large.'},
+                '500': {'description': 'Internal server error'},
+                '503': {'description': 'Service temporarily unavailable, used in maintenance mode'}
+            }
+        }
+    }
+
     def get(self):
         service = 'mongo'
         mongohd = self.get_service_instance(service_name=service)
@@ -533,6 +638,25 @@ class AirodsStage( EndpointResource):
 #        
 class AirodsFree( EndpointResource):
     
+    labels = ['airods']
+    GET = {
+        '/airods/free': {
+            'summary': 'free/delete temporary remote collection  (Epos ecosystem)',
+            'parameters': [
+                {'name': 'debug', 'description': 'for debugging', 'in': 'query', 'type': 'string', 'default': 'no', 'required': False},
+                {'name': 'remote_coll_id', 'description': 'remote collection (stage) ID to free up remote space', 'in': 'query', 'type': 'string', 'default': 'none', 'required': True}
+            ],
+            'responses': {
+                '200': {'description': 'Successful request, results follow'},
+                '204': {'description': 'Request was properly formatted and submitted but no data matches the selection'},
+                '400': {'description': 'Bad request due to improper specification, unrecognised parameter, parameter value out of range, etc.'},
+                '413': {'description': 'Request would result in too much data being returned or the request itself is too large.'},
+                '500': {'description': 'Internal server error'},
+                '503': {'description': 'Service temporarily unavailable, used in maintenance mode'}
+            }
+        }
+    }
+
     def get(self):
         myargs = self.get_input()
         print(myargs)
