@@ -5,29 +5,21 @@ Endpoint AIRODS3 for the RAPyDo framework
 EPOS-EUDAT-EOSC
 """
 
-#################
-# IMPORTS
+import os
+import uuid
+import dateutil.parser
+from irods.query import SpecificQuery
+# from irods.models import Collection, DataObject
+# from irods.models import User, UserGroup, UserAuth
+
 from restapi.rest.definition import EndpointResource
 from restapi.services.detect import detector
 from restapi.utilities.logs import log
-# from restapi.protocols.bearer import authentication
-import dateutil.parser
-import uuid
-import subprocess
-
-from irods.query import SpecificQuery
-from irods.models import Collection, DataObject, User, UserGroup, UserAuth
-
-from restapi.services.detect import detector
-import os
+from restapi import decorators
+from restapi.exceptions import RestApiException
 
 #################
 # INIT VARIABLES
-
-service_name = "sqlalchemy"
-# NOTE: if you need to operate based on service availability
-# SERVICE_AVAILABLE = detector.check_availability(service_name)
-
 
 ###################
 # REST CLASS Airods
@@ -65,81 +57,90 @@ class Airods(EndpointResource):
             }
         }
     }
-    # authentication.required()
+
+    # @decorators.auth.required()
+    @decorators.catch_errors()
     def get(self):
         # # --> important into mongo collections we must have:
         # #     "_cls" : "airods.models.mongo.wf_do"
-        
-        service = 'mongo'
-        mongohd = self.get_service_instance(service_name=service)
-        
-        variables = detector.output_service_variables(service)
+
+        mongohd = self.get_service_instance(service_name='mongo')
+
+        variables = detector.output_service_variables('mongo')
         db = variables.get('database')
-        
+
         mongohd.wf_do._mongometa.connection_alias = db
-        
+
         # real:
         myargs = self.get_input()
-        print(myargs)
+        log.debug(myargs)
         documentResult1 = []
-        myLine={}
+        myLine = {}
         mycollection = mongohd.wf_do
-        
+
         myStartDate = dateutil.parser.parse(myargs.get("start"))
         myEndDate = dateutil.parser.parse(myargs.get("end"))
         myLat = float(myargs.get("minlat"))
         myLon = float(myargs.get("minlon"))
         myLatX = float(myargs.get("maxlat"))
         myLonX = float(myargs.get("maxlon"))
-        
-        
+
         try:
-        
-            myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_max": { "$lte" : myEndDate },"dc_coverage_t_min": { "$gte" : myStartDate } })
-            
-            
+
+            myfirstvalue = mycollection.objects.raw(
+                {
+                    "dc_coverage_x": {"$gte": myLat},
+                    "dc_coverage_y": {"$gte": myLon},
+                    "dc_coverage_x": {"$lte": myLatX},
+                    "dc_coverage_y": {"$lte": myLonX},
+                    "dc_coverage_t_max": {"$lte": myEndDate},
+                    "dc_coverage_t_min": {"$gte": myStartDate}
+                }
+            )
+
         except BaseException as e:
-            print(e, type(e))
-            return self.force_response(e)
-        
-        
+            raise RestApiException(e)
+
         for document in myfirstvalue:
                 myLine['File_ID'] = document.fileId
                 myLine['PID'] = document.dc_identifier
                 myLine['iPath'] = document.irods_path
-                
-                documentResult1.append(myLine)   
 
-            
+                documentResult1.append(myLine)
+
         # Download :: to check w/ irods
         if myargs.get('download') == 'true':
-            
-            icom = self.get_service_instance(service_name='irods') #, user='rods', password='sdor' 
-            
-            # @TODO: have to implement the TOTAL download not only the first - for time being-
-            myobj = myfirstvalue[0].irods_path
-               
+
+            # icom = self.get_service_instance(service_name='irods')
+
+            # @TODO: have to implement the TOTAL download not only the first
+            # myobj = myfirstvalue[0].irods_path
+
             try:
                 # for time being ... @TODO: allow multi files download
-                #return icom.read_in_streaming(myfirstvalue[0].irods_path)
-                
+                # return icom.read_in_streaming(myfirstvalue[0].irods_path)
+
                 for document in myfirstvalue:
                     pass
-                #    print(document.irods_path)
+                #    log.debug(document.irods_path)
                 #    icom.read_in_streaming(document.irods_path)
-                    
+
                 # test only
-                return self.force_response("TEST download Ok")
-            
+                return self.response("TEST download Ok")
+
             except BaseException as e:
-                print(e, type(e))
-                return self.force_response(e)
-                
-            
+                raise RestApiException(e)
+
         # Pid list :: OK
         else:
-            
-            return self.force_response(["total files to download: "+str(len(documentResult1)) ,documentResult1])
+
+            num_files = len(documentResult1)
+            return self.response(
+                [
+                    "total files to download: {}".format(num_files),
+                    documentResult1
+                ]
+            )
 
 
 #######################
@@ -182,22 +183,21 @@ class AirodsMeta(EndpointResource):
 
         # # --> important! into mongo collections we must have:
         # #     "_cls" : "airods.models.mongo.wf_do"
-        
-        service = 'mongo'
-        mongohd = self.get_service_instance(service_name=service)
-        
-        variables = detector.output_service_variables(service)
+
+        mongohd = self.get_service_instance(service_name='mongo')
+
+        variables = detector.output_service_variables('mongo')
         db = variables.get('database')
-        
+
         mongohd.wf_do._mongometa.connection_alias = db
-        
+
         # real:
         myargs = self.get_input()
-        print(myargs)
+        log.debug(myargs)
         documentResult1 = []
-        
+
         mycollection = mongohd.wf_do
-        
+
         myStartDate = dateutil.parser.parse(myargs.get("start"))
         myEndDate = dateutil.parser.parse(myargs.get("end"))
         myLat = float(myargs.get("minlat"))
@@ -205,39 +205,48 @@ class AirodsMeta(EndpointResource):
         myLatX = float(myargs.get("maxlat"))
         myLonX = float(myargs.get("maxlon"))
 
-        myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_max": { "$lte" : myEndDate },"dc_coverage_t_min": { "$gte" : myStartDate } })
-        #myfirstvalue = mongohd.wf_do.objects.all()
-        
+        myfirstvalue = mycollection.objects.raw(
+            {
+                "dc_coverage_x": {"$gte": myLat},
+                "dc_coverage_y": {"$gte": myLon},
+                "dc_coverage_x": {"$lte": myLatX},
+                "dc_coverage_y": {"$lte": myLonX},
+                "dc_coverage_t_max": {"$lte": myEndDate},
+                "dc_coverage_t_min": {"$gte": myStartDate}
+            }
+        )
+        # myfirstvalue = mongohd.wf_do.objects.all()
 
         for document in myfirstvalue:
-             myLine = {
-                "fileId" : document.fileId,
-                "dc_identifier" : document.dc_identifier, 
-                "dc_coverage_x" : document.dc_coverage_x, 
-                "dc_coverage_y" : document.dc_coverage_y,
-                "dc_coverage_z" : document.dc_coverage_z,
-                "dc_title" : document.dc_title,
-                "dc_subject" : document.dc_subject, 
-                "dc_creator" : document.dc_creator, 
-                "dc_contributor" : document.dc_contributor,
-                "dc_publisher" : document.dc_publisher,
-                "dc_type" : document.dc_type,
-                "dc_format" : document.dc_format, 
-                "dc_date" : document.dc_date, 
-                "dc_coverage_t_min" : document.dc_coverage_t_min,
-                "dc_coverage_t_max" : document.dc_coverage_t_max,
-                "dcterms_available" : document.dcterms_available, 
-                "dcterms_dateAccepted" : document.dcterms_dateAccepted, 
-                "dc_rights" : document.dc_rights,
-                "dcterms_isPartOf" : document.dcterms_isPartOf,
-                "irods_path" : document.irods_path
-             }
-             documentResult1.append(myLine)
+            myLine = {
+                "fileId": document.fileId,
+                "dc_identifier": document.dc_identifier,
+                "dc_coverage_x": document.dc_coverage_x,
+                "dc_coverage_y": document.dc_coverage_y,
+                "dc_coverage_z": document.dc_coverage_z,
+                "dc_title": document.dc_title,
+                "dc_subject": document.dc_subject,
+                "dc_creator": document.dc_creator,
+                "dc_contributor": document.dc_contributor,
+                "dc_publisher": document.dc_publisher,
+                "dc_type": document.dc_type,
+                "dc_format": document.dc_format,
+                "dc_date": document.dc_date,
+                "dc_coverage_t_min": document.dc_coverage_t_min,
+                "dc_coverage_t_max": document.dc_coverage_t_max,
+                "dcterms_available": document.dcterms_available,
+                "dcterms_dateAccepted": document.dcterms_dateAccepted,
+                "dc_rights": document.dc_rights,
+                "dcterms_isPartOf": document.dcterms_isPartOf,
+                "irods_path": document.irods_path
+            }
+            documentResult1.append(myLine)
 
-        if documentResult1 : print ("result - OK")
-        #print (documentResult1)
-    
-        return self.force_response([documentResult1])
+        if documentResult1:
+            log.info("result - OK")
+        # log.info (documentResult1)
+
+        return self.response([documentResult1])
 
         """
         # Write server logs, on different levels:
@@ -252,24 +261,19 @@ class AirodsMeta(EndpointResource):
 
         # Activate a service handle
         service_handle = self.get_service_instance(service_name)
-        log.debug("Connected to %s:\n%s", service_name, service_handle)
+        log.debug("Connected to {}:\n{}", service_name, service_handle)
 
         # Handle errors
         if service_handle is None:
-            log.error('Service %s unavailable', service_name)
-            return self.send_errors(
-                message='Server internal error. Please contact adminers.',
-                # code=hcodes.HTTP_BAD_NOTFOUND
-            )
+            log.error('Service {} unavailable', service_name)
+            raise RestApiException('Server internal error. Please contact adminers.')
 
         # Output any python structure (int, string, list, dictionary, etc.)
         response = 'Hello world!'
-        return self.force_response(response)
+        return self.response(response)
         """
 
 
-
-        
 #######################
 # REST CLASS AirodsList
 #
@@ -278,7 +282,7 @@ class AirodsMeta(EndpointResource):
 # (list of endpoints to stage data)
 #
 class AirodsList(EndpointResource):
-    
+
     labels = ['airods']
     GET = {
         '/airods/list': {
@@ -298,47 +302,43 @@ class AirodsList(EndpointResource):
     }
 
     def get(self):
-        
-        icom = self.get_service_instance(service_name='irods') #, user='rods', password='sdor' 
-        
+
+        icom = self.get_service_instance(service_name='irods')
+
         session = icom.prc
-        sql = "select zone_name, zone_conn_string, r_comment   from r_zone_main where r_comment LIKE 'stag%'" #where zone_type_name = 'remote'"
-        
+        # where zone_type_name = 'remote'"
+        sql = "select zone_name, zone_conn_string, r_comment from r_zone_main where r_comment LIKE 'stag%'"
+
         queryResponse = {}
-        #columns = [DataObject.zone_id, DataObject.zone_name] # optional, if we want to get results by key 
+        # optional, if we want to get results by key
+        # columns = [DataObject.zone_id, DataObject.zone_name]
         query = SpecificQuery(session, sql)
         # register specific query in iCAT
         _ = query.register()
 
         for result in query:
-            
-            queryResponse['Endpoint']=result[0]
+
+            queryResponse['Endpoint'] = result[0]
             if result[1]:
-                queryResponse['URL'] =result[1]
-            
+                queryResponse['URL'] = result[1]
+
             if result[2]:
-                queryResponse['description'] =result[2]
-            
-        _ = query.remove()
-            
-            
-        return self.force_response([queryResponse])
-    
+                queryResponse['description'] = result[2]
 
-    
-    
-    
+        query.remove()
 
-        
+        return self.response([queryResponse])
+
+
 ########################
 # REST CLASS AirodsStage
 #
 # AIRODS - STAGE
 # =============
 # (stage to endpoints selected data)
-# 
-class AirodsStage( EndpointResource):
-    
+#
+class AirodsStage(EndpointResource):
+
     labels = ['airods']
     GET = {
         '/airods/stage': {
@@ -370,150 +370,175 @@ class AirodsStage( EndpointResource):
             }
         }
     }
+
+    @decorators.catch_errors()
     def get(self):
-        service = 'mongo'
-        mongohd = self.get_service_instance(service_name=service)
-        
-        variables = detector.output_service_variables(service)
+        mongohd = self.get_service_instance(service_name='mongo')
+
+        variables = detector.output_service_variables('mongo')
         db = variables.get('database')
-        
+
         mongohd.wf_do._mongometa.connection_alias = db
-        
+
         # MONGO
         myargs = self.get_input()
         # debug
         print(myargs)
-        
+
         # init
         documentResult1 = []
         myLine = {}
-        
+
         myLat = ""
         myLon = ""
         myLatX = ""
         myLonX = ""
-        
+
         myNet = ""
         mySta = "*"
         myCha = "*"
         myLoc = ""
-        
+
         mycollection = mongohd.wf_do
-        
+
         # get params
         myStartDate = dateutil.parser.parse(myargs.get("start"))
         myEndDate = dateutil.parser.parse(myargs.get("end"))
-        
-        print (myargs.get("nscl"))
-        
+
+        log.info(myargs.get("nscl"))
+
         # NSCL or BBOX
-        if myargs.get("nscl") == 'true' :
-            
+        if myargs.get("nscl") == 'true':
+
             if myargs.get("network"):
                 myNet = myargs.get("network")
             else:
-                return self.force_response(['error on network declare'])
-            
-            if myargs.get("station"): mySta = myargs.get("station")            
-            if myargs.get("channel"): myCha = myargs.get("channel")             
-            if myargs.get("location"): myLoc = myargs.get("location")
-            
-            # example of fileId "IV.ACER..HHE.D.2015.015"            
-            
-            myfirstvalue = mycollection.objects.raw({"fileId": {"$regex": ".*"+myNet+"."+mySta+"."+myLoc+"."+myCha+".*"},"dc_coverage_t_min": { "$gte" : myStartDate }  , "dc_coverage_t_max": { "$lte" : myEndDate } } )       
+                return self.response(['error on network declare'])
 
-       
-        else :
-           
+            if myargs.get("station"):
+                mySta = myargs.get("station")
+            if myargs.get("channel"):
+                myCha = myargs.get("channel")
+            if myargs.get("location"):
+                myLoc = myargs.get("location")
+
+            # example of fileId "IV.ACER..HHE.D.2015.015"
+
+            myfirstvalue = mycollection.objects.raw(
+                {
+                    "fileId": {
+                        "$regex": ".*" + myNet + "." + mySta + "." + myLoc + "." + myCha + ".*"
+                    },
+                    "dc_coverage_t_min": {"$gte": myStartDate},
+                    "dc_coverage_t_max": {"$lte": myEndDate}
+                }
+            )
+
+        else:
+
             myLat = float(myargs.get("minlat"))
             myLon = float(myargs.get("minlon"))
             myLatX = float(myargs.get("maxlat"))
             myLonX = float(myargs.get("maxlon"))
 
-            myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_max": { "$lte" : myEndDate },"dc_coverage_t_min": { "$gte" : myStartDate } })
-        
+            myfirstvalue = mycollection.objects.raw(
+                {
+                    "dc_coverage_x": {"$gte": myLat},
+                    "dc_coverage_y": {"$gte": myLon},
+                    "dc_coverage_x": {"$lte": myLatX},
+                    "dc_coverage_y": {"$lte": myLonX},
+                    "dc_coverage_t_max": {"$lte": myEndDate},
+                    "dc_coverage_t_min": {"$gte": myStartDate}
+                }
+            )
+
         # debug
-        #for document in myfirstvalue:
+        # for document in myfirstvalue:
         #    print  (document.irods_path)
-            
-        # return self.force_response(['total files staged che no: '])
-        
-            
-        # IRODS 
+
+        # return self.response(['total files staged che no: '])
+
+        # IRODS
         icom = self.get_service_instance(service_name='irods')
-        
-        ephemeralDir=str(uuid.uuid4())
+
+        ephemeralDir = str(uuid.uuid4())
         #
-        # @TODO:  multi endpoint managment        
+        # @TODO:  multi endpoint managment
         # myvars = detector.load_group(label='airods')
-        
+
         # retrieve the stagePath from ENV AIRODS_STAGE_PATH_1
         stagePath = os.environ.get('AIRODS_STAGE_PATH_1')
-        print ("env-path: "+ stagePath )
-        
-        stagePath=stagePath if stagePath.startswith('/') else '/'+stagePath
-        
-        if stagePath.startswith('/'+myargs.get("endpoint")):
-            
+        log.debug("env-path: {}", stagePath)
+        if not stagePath.startswith('/'):
+            stagePath = '/' + stagePath
+
+        if stagePath.startswith('/' + myargs.get("endpoint")):
+
             # stagePath: '/home/rods#INGV/areastage/'
-           
-            dest_path=stagePath+ephemeralDir if stagePath.endswith('/') else stagePath+'/'+ephemeralDir
-            
-            
+            dest_path = stagePath
+            if not stagePath.endswith('/'):
+                dest_path += '/'
+            dest_path += ephemeralDir
+
         else:
-            # @TODO: to improve
-            print ('ERROR - on stagePath')
-            return self.force_response(['ERROR - on stagePath or remote endpoint'])
-        
+            raise RestApiException("Invalid stagePath or remote endpoint")
+
         ipath = icom.create_directory(dest_path)
-        
-        
+
         if ipath is None:
-            raise IrodsException("Failed to create %s" % dest_path)
-        else:
-            log.info("Created irods collection: %s", dest_path)
-        
+            raise RestApiException("Failed to create {}".format(dest_path))
+
+        log.info("Created irods collection: {}", dest_path)
+
         # STAGE
         if ipath:
-            
-            i = 0  #my counter
+
+            # my counter
+            i = 0
             for document in myfirstvalue:
-                
-                stageOk=self.icopy(icom, document.irods_path, dest_path+'/'+document.fileId)
-                                
-                if stageOk :
-                    
-                    myLine['file_ID']=str(document.fileId)
-                    myLine['PID']=str(document.dc_identifier)
-                    i = i+1
+
+                stageOk = self.icopy(
+                    icom,
+                    document.irods_path,
+                    dest_path + '/' + document.fileId
+                )
+
+                if stageOk:
+
+                    myLine['file_ID'] = str(document.fileId)
+                    myLine['PID'] = str(document.dc_identifier)
+                    i += 1
                     documentResult1.append(myLine)
                 else:
-                    
-                    myLine['DO-NOT-OK']='stage DO '+document.fileId+': NOT OK'
+
+                    myLine['DO-NOT-OK'] = 'stage DO ' + document.fileId + ': NOT OK'
                     documentResult1.append(myLine)
-                
-            
+
         else:
-            
-            myLine['DIR-NOT-OK']='stage dir:'+dest_path+' NOT OK'
+
+            myLine['DIR-NOT-OK'] = 'stage dir:' + dest_path + ' NOT OK'
             documentResult1.append(myLine)
         myLine = {}
-        
-        myLine['remote_info'] = self.queryIcat(icom, myargs.get("endpoint"), dest_path)            
-        documentResult1.insert(0, myLine) 
-        
-        return self.force_response(['total files staged: '+str(i), documentResult1])
-    
+
+        myLine['remote_info'] = self.queryIcat(icom, myargs.get("endpoint"), dest_path)
+        documentResult1.insert(0, myLine)
+
+        return self.response(
+            [
+                'total files staged: {}'.format(i),
+                documentResult1
+            ]
+        )
+
     # DO a COPY on Remote endpoint via irule
     def icopy(self, icom, irods_path, dest_path):
-        
         """ EUDAT RULE for Replica (exploited for copy) """
-        
+
         outvar = 'response'
         inputs = {
             '*irods_path': '"%s"' % irods_path,
             '*stage_path': '"%s"' % dest_path
-            }
+        }
         body = """
             *res = EUDATReplication(*irods_path, *stage_path, "false", "false", *%s);
             if (*res) {
@@ -524,23 +549,21 @@ class AirodsStage( EndpointResource):
                 writeLine("stdout", "Replication failed: *%s");
             }
         """ % (outvar, outvar)
-        
 
-        rule_output = icom.rule( 'do_stage', body, inputs, output=True)
-        
-        return self.force_response([rule_output])
-    
-    
+        rule_output = icom.rule('do_stage', body, inputs, output=True)
+
+        return [rule_output]
+
     # Exec a Rule
     """
     def rule(self, icom, name, body, inputs, output=False):
-        
+
         import textwrap
         from irods.rule import Rule
 
         user_current = icom.prc.username
         zone_current = icom.prc.zone
-        
+
         #rule_body = textwrap.dedent(''' #\
         #    %s {{
         #        %s
@@ -549,18 +572,15 @@ class AirodsStage( EndpointResource):
         outname = None
         if output:
             outname = 'ruleExecOut'
-            
+
         myrule = Rule(icom.prc, body=rule_body, params=inputs, output=outname)
         try:
             raw_out = myrule.execute()
         except BaseException as e:
-            msg = 'Irule failed: %s' % e.__class__.__name__
-            log.error(msg)
-            log.warning(e)
-            # raise IrodsException(msg)
-            raise e
+            msg = 'Irule failed: {}'.format(e.__class__.__name__)
+            # raise RestApiException(msg)
         else:
-            log.debug("Rule %s executed: %s", name, raw_out)
+            log.debug("Rule {} executed: {}", name, raw_out)
 
             # retrieve out buffer
             if output and len(raw_out.MsParam_PI) > 0:
@@ -585,59 +605,54 @@ class AirodsStage( EndpointResource):
                     err_buf = re.sub(r'\s+', '', err_buf)
                     log.debug("Err buff: %s", err_buf)
 
-                return self.force_response(buf)
+                return self.response(buf)
 
-            return self.force_response(raw_out)
+            return self.response(raw_out)
         """
-        
+
     # Exec a Query
     def queryIcat(self, icom, zone_name, dest_path):
-        
+
         session = icom.prc
-        sql = "select zone_name, zone_conn_string, r_comment   from r_zone_main where zone_name = '"+zone_name+"'" 
-        print (sql)
-        
-        #alias = 'list_zone_max'
+        sql = "select zone_name, zone_conn_string, r_comment   from r_zone_main where zone_name = '" + zone_name + "'"
+        log.debug(sql)
+
+        # alias = 'list_zone_max'
         queryResponse = {}
-        #columns = [DataObject.zone_id, DataObject.zone_name] # optional, if we want to get results by key 
+        # optional, if we want to get results by key
+        # columns = [DataObject.zone_id, DataObject.zone_name]
         query = SpecificQuery(session, sql)
         # register specific query in iCAT
         _ = query.register()
-        
-        queryResponse['remote_collection_ID']=dest_path
+
+        queryResponse['remote_collection_ID'] = dest_path
         for result in query:
-            
-            #print('Endpoint: '+result[0])
-            queryResponse['Endpoint']=result[0]
+
+            # log.debug('Endpoint: {}', result[0])
+            queryResponse['Endpoint'] = result[0]
             if result[1]:
-                #print('URL: '+result[1])
-                queryResponse['URL'] =result[1]
-            #else:
-                #print('URL: ')
+                # log.debug('URL: {}', result[1])
+                queryResponse['URL'] = result[1]
             if result[2]:
-                #print('description: '+result[2])
-                queryResponse['description'] =result[2]
-            #else:
-                #print('description: ')
-            
+                # log.debug('description: {}', result[2])
+                queryResponse['description'] = result[2]
 
-            #print('{} {}'.format(result[zone_id], result[zone_name]))
+            # log.info('{} {}', result[zone_id], result[zone_name])
 
+        query.remove()
 
-        _ = query.remove()
-        
-        return self.force_response(queryResponse)
-        
+        return self.response(queryResponse)
+
 
 #################
 # REST CLASS AirodsFree
 #
 # AIRODS - FREE
 # =============
-# (free up space on the remote endpoints)  --> probably will  not be used 
-#        
-class AirodsFree( EndpointResource):
-    
+# (free up space on the remote endpoints)  --> probably will  not be used
+#
+class AirodsFree(EndpointResource):
+
     labels = ['airods']
     GET = {
         '/airods/free': {
@@ -659,21 +674,20 @@ class AirodsFree( EndpointResource):
 
     def get(self):
         myargs = self.get_input()
-        print(myargs)
-        documentResult = []
-        
-        collection_to_del = myargs.get("remote_coll_id")
-        print ('@todo: delete remote collection!')
-        print ('@todo: empty trash remote !')
+        log.debug(myargs)
+        # documentResult = []
+
+        # collection_to_del = myargs.get("remote_coll_id")
+        log.warning('@todo: delete remote collection!')
+        log.warning('@todo: empty trash remote !')
         """
         we need two rules:
         1)
         irm -r collection_to_del
-        
+
         2)
         irmtrash -rV --orphan /BINGV/trash/home/rods#INGV/trash
-        
+
         """
-        
-        
-        return self.force_response(['ciao'])
+
+        return self.response(['ciao'])
