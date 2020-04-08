@@ -179,6 +179,7 @@ class AirodsMeta(EndpointResource):
         }
     }
 
+    @decorators.catch_errors()
     def get(self):
 
         # # --> important! into mongo collections we must have:
@@ -301,6 +302,7 @@ class AirodsList(EndpointResource):
         }
     }
 
+    @decorators.catch_errors()
     def get(self):
 
         icom = self.get_service_instance(service_name='irods')
@@ -672,6 +674,7 @@ class AirodsFree(EndpointResource):
         }
     }
 
+    @decorators.catch_errors()
     def get(self):
         myargs = self.get_input()
         log.debug(myargs)
