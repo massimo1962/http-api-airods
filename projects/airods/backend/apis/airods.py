@@ -13,7 +13,7 @@ from irods.query import SpecificQuery
 # from irods.models import User, UserGroup, UserAuth
 
 from restapi.rest.definition import EndpointResource
-from restapi.services.detect import detector
+from restapi.services.detect import Detector
 from restapi.utilities.logs import log
 from restapi import decorators
 from restapi.exceptions import RestApiException
@@ -31,7 +31,7 @@ from restapi.exceptions import RestApiException
 class Airods(EndpointResource):
 
     labels = ['airods']
-    GET = {
+    _GET = {
         '/airods/data': {
             'summary': 'Get data from iRODS-B2SAFE via boundingBox-timeWindow  (Epos ecosystem)',
             'parameters': [
@@ -66,7 +66,7 @@ class Airods(EndpointResource):
 
         mongohd = self.get_service_instance(service_name='mongo')
 
-        variables = detector.output_service_variables('mongo')
+        variables = Detector.load_variables(prefix='mongo')
         db = variables.get('database')
 
         mongohd.wf_do._mongometa.connection_alias = db
@@ -102,11 +102,11 @@ class Airods(EndpointResource):
             raise RestApiException(e)
 
         for document in myfirstvalue:
-                myLine['File_ID'] = document.fileId
-                myLine['PID'] = document.dc_identifier
-                myLine['iPath'] = document.irods_path
+            myLine['File_ID'] = document.fileId
+            myLine['PID'] = document.dc_identifier
+            myLine['iPath'] = document.irods_path
 
-                documentResult1.append(myLine)
+            documentResult1.append(myLine)
 
         # Download :: to check w/ irods
         if myargs.get('download') == 'true':
@@ -153,7 +153,7 @@ class Airods(EndpointResource):
 class AirodsMeta(EndpointResource):
 
     labels = ['airods']
-    GET = {
+    _GET = {
         '/airods/meta': {
             'summary': 'Get Metadata from iRODS-B2SAFE via boundingBox-timeWindow (Epos ecosystem)',
             'parameters': [
@@ -187,7 +187,7 @@ class AirodsMeta(EndpointResource):
 
         mongohd = self.get_service_instance(service_name='mongo')
 
-        variables = detector.output_service_variables('mongo')
+        variables = Detector.load_variables(prefix='mongo')
         db = variables.get('database')
 
         mongohd.wf_do._mongometa.connection_alias = db
@@ -285,7 +285,7 @@ class AirodsMeta(EndpointResource):
 class AirodsList(EndpointResource):
 
     labels = ['airods']
-    GET = {
+    _GET = {
         '/airods/list': {
             'summary': 'Get List of endpoint to stage data  (Epos ecosystem)',
             'parameters': [
@@ -342,7 +342,7 @@ class AirodsList(EndpointResource):
 class AirodsStage(EndpointResource):
 
     labels = ['airods']
-    GET = {
+    _GET = {
         '/airods/stage': {
             'summary': 'Get data from iRODS-B2SAFE via boundingBox-timeWindow and stage data to endpoint (Epos ecosystem)',
             'parameters': [
@@ -377,7 +377,7 @@ class AirodsStage(EndpointResource):
     def get(self):
         mongohd = self.get_service_instance(service_name='mongo')
 
-        variables = detector.output_service_variables('mongo')
+        variables = Detector.load_variables(prefix='mongo')
         db = variables.get('database')
 
         mongohd.wf_do._mongometa.connection_alias = db
@@ -656,7 +656,7 @@ class AirodsStage(EndpointResource):
 class AirodsFree(EndpointResource):
 
     labels = ['airods']
-    GET = {
+    _GET = {
         '/airods/free': {
             'summary': 'free/delete temporary remote collection  (Epos ecosystem)',
             'parameters': [
