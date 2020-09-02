@@ -1,11 +1,14 @@
-version: '3'
+version: "3"
 
 services:
+  backend:
+    build: ${SUBMODULE_DIR}/b2stage/projects/b2stage/builds/backend
 
   icat:
+    build: ${SUBMODULE_DIR}/b2stage/projects/b2stage/builds/icat
     environment:
       ACTIVATE: 0
 
   mongodb:
     environment:
-      ACTIVATE: 0 
+      ACTIVATE: 0

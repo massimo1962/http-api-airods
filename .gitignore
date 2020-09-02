@@ -28,9 +28,8 @@ data/*/*.json
 ##  Dynamically created file and folders  ##
 ############################################
 
-#.projectrc
-frontend/b2stage/libs/bower_components
 .env
+.rapydo
 
 ###################################
 ##  Temporary and miscellaneous  ##
