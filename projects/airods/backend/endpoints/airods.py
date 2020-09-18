@@ -10,7 +10,7 @@ import dateutil.parser
 from irods.query import SpecificQuery
 from restapi import decorators
 from restapi.exceptions import BadRequest, RestApiException
-from restapi.models import PartialInputSchema, fields, validate
+from restapi.models import PartialSchema, fields, validate
 from restapi.rest.definition import EndpointResource
 from restapi.utilities.logs import log
 
@@ -35,7 +35,7 @@ responses = {
 #
 
 
-class Download(PartialInputSchema):
+class Download(PartialSchema):
     download = fields.Boolean(
         description="Allow download data or retrieve PID / URI of digital object",
         missing=False,
@@ -44,7 +44,7 @@ class Download(PartialInputSchema):
 
 
 # It is not used
-# class Debug(PartialInputSchema):
+# class Debug(PartialSchema):
 #     debug = fields.Boolean(
 #         description='Enable debugging',
 #         missing=False,
@@ -52,7 +52,7 @@ class Download(PartialInputSchema):
 #     )
 
 
-class AirodsInput(PartialInputSchema):
+class AirodsInput(PartialSchema):
 
     start = fields.DateTime(
         description="Limit to results starting on or after the specified start time in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)",
@@ -105,7 +105,7 @@ class AirodsInput(PartialInputSchema):
     )
 
 
-class StageInput(PartialInputSchema):
+class StageInput(PartialSchema):
 
     nscl = fields.Boolean(
         description="Select NSCL query mode (FDSN like) instead of boundingBox",
@@ -137,7 +137,7 @@ class StageInput(PartialInputSchema):
     )
 
 
-class AirodsFreeInput(PartialInputSchema):
+class AirodsFreeInput(PartialSchema):
     remote_coll_id = fields.Str(
         description="remote collection (stage) ID to free up remote space",
         required=True,

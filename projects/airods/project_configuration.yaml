@@ -1,8 +1,8 @@
 project:
   title: AIRODS HTTP-API EPOS-ORFEUS_CC-EOSC
   description: expose some endpoint for Epos ecosystem
-  version: 1.1.2
-  rapydo: 0.7.6
+  version: "1.1.2"
+  rapydo: "0.8"
   extends: b2stage
   extends-from: submodules/b2stage
 
