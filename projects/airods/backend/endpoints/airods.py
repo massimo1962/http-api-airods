@@ -35,13 +35,6 @@ responses = {
 #
 
 
-class Download(PartialSchema):
-    download = fields.Boolean(
-        description="Allow download data or retrieve PID / URI of digital object",
-        required=True,
-    )
-
-
 # It is not used
 # class Debug(PartialSchema):
 #     debug = fields.Boolean(
@@ -104,7 +97,14 @@ class AirodsInput(PartialSchema):
     )
 
 
-class StageInput(PartialSchema):
+class AirodsInputWithDownload(AirodsInput):
+    download = fields.Boolean(
+        description="Allow download data or retrieve PID / URI of digital object",
+        required=True,
+    )
+
+
+class StageInput(AirodsInput):
 
     nscl = fields.Boolean(
         description="Select NSCL query mode (FDSN like) instead of boundingBox",
@@ -148,8 +148,8 @@ class Airods(EndpointResource):
     labels = ["airods"]
 
     # @decorators.auth.require()
-    @decorators.use_kwargs(AirodsInput)
-    @decorators.use_kwargs(Download)
+    @decorators.use_kwargs(AirodsInputWithDownload)
+    # @decorators.use_kwargs(Download)
     @decorators.endpoint(
         path="/airods/data",
         summary="Get data from irods-b2safe via boundingbox-timewindow (epos ecosystem)",

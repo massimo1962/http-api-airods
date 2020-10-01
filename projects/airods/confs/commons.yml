@@ -3,12 +3,13 @@ version: "3"
 services:
   backend:
     build: ${SUBMODULE_DIR}/b2stage/projects/b2stage/builds/backend
+    environment:
+      IRODS_ENABLE_CONNECTOR: "False"
 
   icat:
     build: ${SUBMODULE_DIR}/b2stage/projects/b2stage/builds/icat
     environment:
       ACTIVATE: 0
-
-  mongodb:
-    environment:
-      ACTIVATE: 0
+  # mongodb:
+  #   environment:
+  #     ACTIVATE: 0
