@@ -38,7 +38,6 @@ responses = {
 class Download(PartialSchema):
     download = fields.Boolean(
         description="Allow download data or retrieve PID / URI of digital object",
-        missing=False,
         required=True,
     )
 
@@ -57,32 +56,32 @@ class AirodsInput(PartialSchema):
     start = fields.DateTime(
         description="Limit to results starting on or after the specified start time in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)",
         missing=dateutil.parser.parse("2015-01-03T00:00:00Z"),
-        required=True,
+        # required=True,
     )
     end = fields.DateTime(
         description="Limit to results ending on or before the specified end time in ISO 8601 format date (yyyy-mm-ddThh:mm:ss)",
         missing=dateutil.parser.parse("2015-01-24T00:00:00Z"),
-        required=True,
+        # required=True,
     )
     minlat = fields.Float(
         description="Limit to results starting on or after the specified Latitude",
         missing=35.30,
-        required=True,
+        # required=True,
     )
     minlon = fields.Float(
         description="Limit to results starting on or after the specified Longitude",
         missing=6.30,
-        required=True,
+        # required=True,
     )
     maxlat = fields.Float(
         description="Limit to results ending on or before the specified Latitude",
         missing=46.30,
-        required=True,
+        # required=True,
     )
     maxlon = fields.Float(
         description="Limit to results ending on or before the specified Longitude",
         missing=63.30,
-        required=True,
+        # required=True,
     )
 
     # limit, offset and output fields are not used
@@ -109,7 +108,7 @@ class StageInput(PartialSchema):
 
     nscl = fields.Boolean(
         description="Select NSCL query mode (FDSN like) instead of boundingBox",
-        missing=False,
+        # missing=False,
         required=True,
     )
     network = fields.Str(
