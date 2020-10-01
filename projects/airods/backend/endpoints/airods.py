@@ -126,7 +126,7 @@ class StageInput(PartialSchema):
         missing="*",
         required=False,
     )
-    location = fields.Str(
+    loc = fields.Str(
         description="Select one location codes.", missing="", required=False
     )
     endpoint = fields.Str(
@@ -389,7 +389,7 @@ class AirodsStage(EndpointResource):
         network,
         station,
         channel,
-        location,
+        loc,
         endpoint,
     ):
         mongohd = self.get_service_instance("mongo")
@@ -417,9 +417,7 @@ class AirodsStage(EndpointResource):
             # example of fileId "IV.ACER..HHE.D.2015.015"
             myfirstvalue = mycollection.objects.raw(
                 {
-                    "fileId": {
-                        "$regex": f".*{network}.{station}.{channel}.{location}.*"
-                    },
+                    "fileId": {"$regex": f".*{network}.{station}.{channel}.{loc}.*"},
                     "dc_coverage_t_min": {"$gte": start},
                     "dc_coverage_t_max": {"$lte": end},
                 }
