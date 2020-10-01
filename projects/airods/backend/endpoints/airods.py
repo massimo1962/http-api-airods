@@ -371,29 +371,23 @@ class AirodsStage(EndpointResource):
     labels = ["airods"]
 
     @decorators.use_kwargs(AirodsInput)
-    @decorators.use_kwargs(StageInput)
+    # @decorators.use_kwargs(StageInput)
     @decorators.endpoint(
         path="/airods/stage",
         summary="Get data from irods-b2safe via boundingbox-timewindow and stage data to endpoint (epos ecosystem)",
         responses=responses,
     )
     def get(
-        self,
-        start,
-        end,
-        minlat,
-        minlon,
-        maxlat,
-        maxlon,
-        nscl,
-        network,
-        station,
-        channel,
-        location,
-        endpoint,
+        self, start, end, minlat, minlon, maxlat, maxlon,
     ):
         mongohd = self.get_service_instance("mongo")
 
+        nscl = ""
+        network = ""
+        station = ""
+        channel = ""
+        location = ""
+        endpoint = ""
         db = mongohd.variables.get("database")
 
         mongohd.wf_do._mongometa.connection_alias = db
