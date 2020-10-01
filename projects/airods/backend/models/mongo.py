@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """ Models for mongo database """
 
 # from pymongo.write_concern import WriteConcern
@@ -14,7 +12,9 @@ class Testing(MongoModel):
     #     connection_alias = 'test'
     #     # write_concern = WriteConcern(j=True)
 
+
 # FIXME: two fields are missing in ExternalAccounts
+
 
 class wf_do(MongoModel):
     dc_identifier = fields.CharField()
@@ -38,6 +38,8 @@ class wf_do(MongoModel):
     fileId = fields.CharField()
     irods_path = fields.CharField()
 
-    #class Meta:
+    # class Meta:
     #    write_concern = WriteConcern(j=True)
+
+
 #    connection_alias = MYDB
