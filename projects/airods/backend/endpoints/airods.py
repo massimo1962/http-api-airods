@@ -132,7 +132,7 @@ class StageInput(PartialSchema):
     endpoint = fields.Str(
         description="Select target endpoint to stage data (see /list).",
         missing="TARGET",
-        required=True,
+        # required=True,
     )
 
 
