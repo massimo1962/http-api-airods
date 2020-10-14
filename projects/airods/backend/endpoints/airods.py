@@ -97,7 +97,7 @@ class AirodsInput(PartialSchema):
     # )
 
 
-class Download(PartialSchema):
+class AirodsInputWithDownload(AirodsInput):
     download = fields.Boolean(
         description="Allow download data or retrieve PID / URI of digital object",
         required=True,
@@ -148,8 +148,8 @@ class Airods(EndpointResource):
     labels = ["airods"]
 
     # @decorators.auth.require()
-    @decorators.use_kwargs(AirodsInput, location="query")
-    @decorators.use_kwargs(Download, location="query")
+    @decorators.use_kwargs(AirodsInputWithDownload, location="query")
+    # @decorators.use_kwargs(Download, location="query")
     @decorators.endpoint(
         path="/airods/data",
         summary="Get data from irods-b2safe via boundingbox-timewindow (epos ecosystem)",
@@ -378,7 +378,7 @@ class AirodsStage(EndpointResource):
 
     labels = ["airods"]
 
-    # @decorators.use_kwargs(AirodsInput)
+    # @decorators.use_kwargs(AirodsInput, location="query")
     @decorators.use_kwargs(StageInput, location="query")
     @decorators.endpoint(
         path="/airods/stage",
