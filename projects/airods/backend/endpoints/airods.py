@@ -89,12 +89,12 @@ class AirodsInput(PartialSchema):
     #     missing=0,
     #     required=False
     # )
-    output = fields.Str(
-        description="Specifies the output format (if is set download param).",
-        missing="json",
-        validate=validate.OneOf(["json", "xml"]),
-        required=False,
-    )
+    # output = fields.Str(
+    #     description="Specifies the output format (if is set download param).",
+    #     missing="json",
+    #     validate=validate.OneOf(["json", "xml"]),
+    #     required=False,
+    # )
 
 
 class AirodsInputWithDownload(AirodsInput):
