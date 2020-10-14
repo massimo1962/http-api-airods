@@ -149,7 +149,7 @@ class Airods(EndpointResource):
 
     # @decorators.auth.require()
     @decorators.use_kwargs(AirodsInput, location="query")
-    @decorators.use_kwargs(Download)
+    @decorators.use_kwargs(Download, location="query")
     @decorators.endpoint(
         path="/airods/data",
         summary="Get data from irods-b2safe via boundingbox-timewindow (epos ecosystem)",
