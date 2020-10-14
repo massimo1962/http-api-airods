@@ -148,7 +148,7 @@ class Airods(EndpointResource):
     labels = ["airods"]
 
     # @decorators.auth.require()
-    @decorators.use_kwargs(AirodsInputWithDownload)
+    @decorators.use_kwargs(AirodsInputWithDownload, location="query")
     # @decorators.use_kwargs(Download)
     @decorators.endpoint(
         path="/airods/data",
@@ -233,7 +233,7 @@ class AirodsMeta(EndpointResource):
 
     labels = ["airods"]
 
-    @decorators.use_kwargs(AirodsInput)
+    @decorators.use_kwargs(AirodsInput, location="query")
     @decorators.endpoint(
         path="/airods/meta",
         summary="Get metadata from irods-b2safe via boundingbox-timewindow (epos ecosystem)",
@@ -371,7 +371,7 @@ class AirodsStage(EndpointResource):
     labels = ["airods"]
 
     # @decorators.use_kwargs(AirodsInput)
-    @decorators.use_kwargs(StageInput)
+    @decorators.use_kwargs(StageInput, location="query")
     @decorators.endpoint(
         path="/airods/stage",
         summary="Get data from irods-b2safe via boundingbox-timewindow and stage data to endpoint (epos ecosystem)",
@@ -625,7 +625,7 @@ class AirodsFree(EndpointResource):
 
     labels = ["airods"]
 
-    @decorators.use_kwargs(AirodsFreeInput)
+    @decorators.use_kwargs(AirodsFreeInput, location="query")
     @decorators.endpoint(
         path="/airods/free",
         summary="Free/delete temporary remote collection (epos ecosystem)",
