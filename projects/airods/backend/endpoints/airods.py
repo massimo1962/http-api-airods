@@ -9,8 +9,9 @@ import uuid
 import dateutil.parser
 from irods.query import SpecificQuery
 from restapi import decorators
+from restapi.connectors import irods, mongo
 from restapi.exceptions import BadRequest, RestApiException
-from restapi.models import PartialSchema, fields, validate
+from restapi.models import PartialSchema, fields  # , validate
 from restapi.rest.definition import EndpointResource
 from restapi.utilities.logs import log
 
@@ -159,7 +160,7 @@ class Airods(EndpointResource):
         # # --> important into mongo collections we must have:
         # #     "_cls" : "airods.models.mongo.wf_do"
 
-        mongohd = self.get_service_instance("mongo")
+        mongohd = mongo.get_instance()
 
         db = mongohd.variables.get("database")
 
@@ -201,7 +202,7 @@ class Airods(EndpointResource):
         # Download :: to check w/ irods
         if download:
 
-            # icom = self.get_service_instance('irods')
+            # icom = irods.get_instance()
 
             # @TODO: have to implement the TOTAL download not only the first
             # myobj = myfirstvalue[0].irods_path
@@ -252,7 +253,7 @@ class AirodsMeta(EndpointResource):
         # # --> important! into mongo collections we must have:
         # #     "_cls" : "airods.models.mongo.wf_do"
 
-        mongohd = self.get_service_instance("mongo")
+        mongohd = mongo.get_instance()
 
         db = mongohd.variables.get("database")
 
@@ -305,17 +306,12 @@ class AirodsMeta(EndpointResource):
 
         """
         # Write server logs, on different levels:
-        # very_verbose, verbose, debug, info, warning, error, critical, exit
+        # debug, info, warning, error, critical
         log.info("Received a test HTTP request")
 
-        # Activate a service handle
-        service_handle = self.get_service_instance(service_name)
-        log.debug("Connected to {}:\n{}", service_name, service_handle)
-
         # Handle errors
-        if service_handle is None:
-            log.error('Service {} unavailable', service_name)
-            raise RestApiException('Server internal error. Please contact adminers.')
+        if error:
+            raise RestApiException('Your message')
 
         # Output any python structure (int, string, list, dictionary, etc.)
         response = 'Hello world!'
@@ -341,7 +337,7 @@ class AirodsList(EndpointResource):
     )
     def get(self):
 
-        icom = self.get_service_instance("irods")
+        icom = irods.get_instance()
 
         # where zone_type_name = 'remote'"
         sql = "select zone_name, zone_conn_string, r_comment from r_zone_main where r_comment LIKE 'stag%'"
@@ -388,7 +384,7 @@ class AirodsStage(EndpointResource):
     def get(
         self, start, end, minlat, minlon, maxlat, maxlon,
     ):
-        mongohd = self.get_service_instance("mongo")
+        mongohd = mongo.get_instance()
 
         nscl = ""
         network = ""
@@ -445,7 +441,7 @@ class AirodsStage(EndpointResource):
         # return self.response(['total files staged che no: '])
 
         # IRODS
-        icom = self.get_service_instance("irods")
+        icom = irods.get_instance()
 
         ephemeralDir = str(uuid.uuid4())
         #
