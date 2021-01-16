@@ -78,34 +78,15 @@ class AirodsInput(PartialSchema):
         # required=True,
     )
 
-    # limit, offset and output fields are not used
 
-    # limit = fields.Integer(
-    #     description='Make query limit',
-    #     missing=20,
-    #     required=False
-    # )
-    # offset = fields.Integer(
-    #     description='Make query offset',
-    #     missing=0,
-    #     required=False
-    # )
-    # output = fields.Str(
-    #     description="Specifies the output format (if is set download param).",
-    #     missing="json",
-    #     validate=validate.OneOf(["json", "xml"]),
-    #     required=False,
-    # )
-
-
-class AirodsInputWithDownload(AirodsInput):
+class Download(PartialSchema):
     download = fields.Boolean(
         description="Allow download data or retrieve PID / URI of digital object",
         required=True,
     )
 
 
-class StageInput(AirodsInput):
+class StageInput(PartialSchema):
 
     nscl = fields.Boolean(
         description="Select NSCL query mode (FDSN like) instead of boundingBox",
@@ -149,8 +130,8 @@ class Airods(EndpointResource):
     labels = ["airods"]
 
     # @decorators.auth.require()
-    @decorators.use_kwargs(AirodsInputWithDownload, location="query")
-    # @decorators.use_kwargs(Download, location="query")
+    @decorators.use_kwargs(AirodsInput, location="query")
+    @decorators.use_kwargs(Download, location="query")
     @decorators.endpoint(
         path="/airods/data",
         summary="Get data from irods-b2safe via boundingbox-timewindow (epos ecosystem)",
@@ -374,7 +355,7 @@ class AirodsStage(EndpointResource):
 
     labels = ["airods"]
 
-    # @decorators.use_kwargs(AirodsInput, location="query")
+    @decorators.use_kwargs(AirodsInput, location="query")
     @decorators.use_kwargs(StageInput, location="query")
     @decorators.endpoint(
         path="/airods/stage",
